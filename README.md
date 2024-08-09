@@ -1,5 +1,16 @@
 # screenshot-to-code
 
+
+this project just fork form https://github.com/abi/screenshot-to-code
+
+Our goal in creating this project is to make the original project compatible with Azure's OpenAI service, helping more developers to use it.
+
+
+more dital you can find form that project
+
+
+
+
 A simple tool to convert screenshots, mockups and Figma designs into clean, functional code using AI. **Now supporting Claude Sonnet 3.5 and GPT-4O!**
 
 https://github.com/abi/screenshot-to-code/assets/23818/6cebadae-2fe3-4986-ac6a-8fb9db030045
