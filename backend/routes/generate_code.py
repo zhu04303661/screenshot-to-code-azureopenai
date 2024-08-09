@@ -4,6 +4,9 @@ from fastapi import APIRouter, WebSocket
 import openai
 from codegen.utils import extract_html_content
 from config import ANTHROPIC_API_KEY, IS_PROD, SHOULD_MOCK_AI_RESPONSE
+from config import ANTHROPIC_API_KEY, OPENAI_API_KEY,AZURE_OPENAI_API_KEY,AZURE_OPENAI_RESOURCE_NAME,AZURE_OPENAI_DEPLOYMENT_NAME,AZURE_OPENAI_API_VERSION
+from config import AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME,AZURE_OPENAI_DALLE3_API_VERSION 
+
 from custom_types import InputMode
 from llm import (
     Llm,
@@ -124,7 +127,15 @@ async def stream_code(websocket: WebSocket):
     azure_openai_api_version = None
     azure_openai_dalle3_deployment_name = None
     azure_openai_dalle3_api_version = None
-    
+
+    azure_openai_api_key=AZURE_OPENAI_API_KEY
+    azure_openai_api_version=AZURE_OPENAI_API_VERSION
+    azure_openai_resource_name=AZURE_OPENAI_RESOURCE_NAME
+    azure_openai_deployment_name=AZURE_OPENAI_DEPLOYMENT_NAME
+    azure_openai_dalle3_deployment_name = AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME
+    azure_openai_dalle3_api_version = AZURE_OPENAI_DALLE3_API_VERSION
+
+
     if params["openAiApiKey"]:
         openai_api_key = params["openAiApiKey"]
         print("Using OpenAI API key from client-side settings dialog")
@@ -133,16 +144,11 @@ async def stream_code(websocket: WebSocket):
         
         azure_openai_api_key = os.environ.get("AZURE_OPENAI_API_KEY")
         azure_openai_resource_name = os.environ.get("AZURE_OPENAI_RESOURCE_NAME")
-        azure_openai_deployment_name = os.environ.get(
-            "AZURE_OPENAI_DEPLOYMENT_NAME"
-        )
+        azure_openai_deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
         azure_openai_api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
-        azure_openai_dalle3_deployment_name = os.environ.get(
-            "AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME"
-        )
-        azure_openai_dalle3_api_version = os.environ.get(
-            "AZURE_OPENAI_DALLE3_API_VERSION"
-        )
+
+        azure_openai_dalle3_deployment_name = os.environ.get("AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME")
+        azure_openai_dalle3_api_version = os.environ.get("AZURE_OPENAI_DALLE3_API_VERSION")
         
         if openai_api_key:
             print("Using OpenAI API key from environment variable")

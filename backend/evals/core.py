@@ -1,4 +1,5 @@
 from config import ANTHROPIC_API_KEY, OPENAI_API_KEY,AZURE_OPENAI_API_KEY,AZURE_OPENAI_RESOURCE_NAME,AZURE_OPENAI_DEPLOYMENT_NAME,AZURE_OPENAI_API_VERSION
+import ipdb
 from llm import Llm, stream_claude_response, stream_openai_response, stream_azure_openai_response
 from prompts import assemble_prompt
 from prompts.types import Stack
@@ -27,7 +28,8 @@ async def generate_code_core(
             callback=lambda x: process_chunk(x),
             model=model,
         )
-    elif model == Llm.GPT_4_VISION :
+    #elif model == Llm.GPT_4_VISION :
+    else:
         if not AZURE_OPENAI_API_KEY:
             raise Exception("AZURE_OPENAI_API_KEY API key not found")
 
@@ -40,16 +42,16 @@ async def generate_code_core(
             callback=lambda x: process_chunk(x),
             model=model,
         )
-    else:
-        if not OPENAI_API_KEY:
-            raise Exception("OpenAI API key not found")
+    #else:
+    #    if not OPENAI_API_KEY:
+    #        raise Exception("OpenAI API key not found")
 
-        completion = await stream_openai_response(
-            prompt_messages,
-            api_key=OPENAI_API_KEY,
-            base_url=None,
-            callback=lambda x: process_chunk(x),
-            model=model,
-        )
+    #    completion = await stream_openai_response(
+    #        prompt_messages,
+    #        api_key=OPENAI_API_KEY,
+    #        base_url=None,
+    #        callback=lambda x: process_chunk(x),
+    #        model=model,
+    #    )
 
     return completion
