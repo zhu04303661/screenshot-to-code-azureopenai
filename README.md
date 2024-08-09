@@ -1,13 +1,12 @@
 # screenshot-to-code
 
 
-this project just fork form https://github.com/abi/screenshot-to-code
-
+This project just fork form https://github.com/abi/screenshot-to-code
 Our goal in creating this project is to make the original project compatible with Azure's OpenAI service, helping more developers to use it.
 
 
 more dital you can find form that project
-
+this change have refre https://github.com/abi/screenshot-to-code/pull/186/commits/88e383cbd679f9b3f946369a2ee3b16e1716b65f
 
 
 
@@ -65,7 +64,16 @@ Run the backend (I use Poetry for package management - `pip install poetry` if y
 
 ```bash
 cd backend
-echo "OPENAI_API_KEY=sk-your-key" > .env
+
+echo "AZURE_OPENAI_API_KEY=sk-your-key" > .env
+echo "AZURE_OPENAI_RESOURCE_NAME=azure_resource_name" > .env
+echo "AZURE_OPENAI_DEPLOYMENT_NAME=azure_deployment_name" > .env
+echo "AZURE_OPENAI_API_VERSION=azure_api_version" > .env
+echo "AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME=azure_dalle3_deployment_name"> .env
+echo "AZURE_OPENAI_DALLE3_API_VERSION=azure_dalle3_api_version" > .env
+
+source  .env 
+
 poetry install
 poetry shell
 poetry run uvicorn main:app --reload --port 7001
@@ -97,10 +105,28 @@ MOCK=true poetry run uvicorn main:app --reload --port 7001
 
 If you have Docker installed on your system, in the root directory, run:
 
+For Azure version:
+
 ```bash
-echo "OPENAI_API_KEY=sk-your-key" > .env
+echo "AZURE_OPENAI_API_KEY=sk-your-key" > .env
+echo "AZURE_OPENAI_RESOURCE_NAME=azure_resource_name" > .env
+echo "AZURE_OPENAI_DEPLOYMENT_NAME=azure_deployment_name" > .env
+echo "AZURE_OPENAI_API_VERSION=azure_api_version" > .env
+echo "AZURE_OPENAI_DALLE3_DEPLOYMENT_NAME=azure_dalle3_deployment_name"> .env
+echo "AZURE_OPENAI_DALLE3_API_VERSION=azure_dalle3_api_version" > .env
+
 docker-compose up -d --build
 ```
+
+this is example:
+
+ANTHROPIC_API_KEY=sk-ant-api03-xxxx-cpPrUgAA
+AZURE_OPENAI_API_KEY=200000000000000000100
+AZURE_OPENAI_API_VERSION=2023-09-15-preview
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
+AZURE_OPENAI_RESOURCE_NAME=openai-eastus
+
+
 
 The app will be up and running at http://localhost:5173. Note that you can't develop the application with this setup as the file changes won't trigger a rebuild.
 
