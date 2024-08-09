@@ -2,7 +2,7 @@ import base64
 from enum import Enum
 from typing import Any, Awaitable, Callable, List, cast
 from anthropic import AsyncAnthropic
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, AsyncAzureOpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionChunk
 from config import IS_DEBUG_ENABLED
 from debug.DebugFileWriter import DebugFileWriter
@@ -13,9 +13,14 @@ from utils import pprint_prompt
 
 # Actual model versions that are passed to the LLMs and stored in our logs
 class Llm(Enum):
-    GPT_4_VISION = "gpt-4-vision-preview"
+    #AZURE_GPT_4_VISION = "gpt-4-vision-preview"
+    #AZURE_GPT_4O = "gpt-4o"
+    
+    GPT_4_VISION = "gpt-4o"
+    #GPT_4_VISION = "gpt-4-vision-preview"
     GPT_4_TURBO_2024_04_09 = "gpt-4-turbo-2024-04-09"
     GPT_4O_2024_05_13 = "gpt-4o-2024-05-13"
+    
     CLAUDE_3_SONNET = "claude-3-sonnet-20240229"
     CLAUDE_3_OPUS = "claude-3-opus-20240229"
     CLAUDE_3_HAIKU = "claude-3-haiku-20240307"
@@ -31,6 +36,50 @@ def convert_frontend_str_to_llm(frontend_str: str) -> Llm:
     else:
         return Llm(frontend_str)
 
+async def stream_azure_openai_response(
+    messages: List[ChatCompletionMessageParam],
+    azure_openai_api_key: str | None,
+    azure_openai_api_version: str | None,
+    azure_openai_resource_name: str | None,
+    azure_openai_deployment_name: str | None,
+    callback: Callable[[str], Awaitable[None]],
+    model: Llm,
+) -> str:
+    client = AsyncAzureOpenAI(
+        api_version=azure_openai_api_version,
+        api_key=azure_openai_api_key,
+        azure_endpoint=f"https://{azure_openai_resource_name}.openai.azure.com/",
+        azure_deployment=azure_openai_deployment_name,
+    )
+
+    # Base parameters
+    params = {
+        "model": model.value,
+        "messages": messages,
+        "stream": True,
+        "timeout": 600,
+        "temperature": 0.0,
+    }
+
+    # Add 'max_tokens' only if the model is a GPT4 vision or Turbo model
+    if (
+        model == Llm.GPT_4_VISION
+        or model == Llm.GPT_4_TURBO_2024_04_09
+        or model == Llm.GPT_4O_2024_05_13
+    ):
+        params["max_tokens"] = 4096
+
+    stream = await client.chat.completions.create(**params)  # type: ignore
+    full_response = ""
+    async for chunk in stream:  # type: ignore
+        assert isinstance(chunk, ChatCompletionChunk)
+        content = chunk.choices[0].delta.content or ""
+        full_response += content
+        await callback(content)
+
+    await client.close()
+
+    return full_response
 
 async def stream_openai_response(
     messages: List[ChatCompletionMessageParam],
@@ -227,3 +276,4 @@ async def stream_claude_response_native(
         raise Exception("No HTML response found in AI response")
     else:
         return response.content[0].text
+

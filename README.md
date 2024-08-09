@@ -58,6 +58,8 @@ echo "OPENAI_API_KEY=sk-your-key" > .env
 poetry install
 poetry shell
 poetry run uvicorn main:app --reload --port 7001
+poetry run uvicorn main:app --reload --host 0.0.0.0 --port  7001
+
 ```
 
 If you want to use Anthropic, add `ANTHROPIC_API_KEY` to `backend/.env`. You can also set up the keys using the settings dialog on the front-end (click the gear icon after loading the frontend).
